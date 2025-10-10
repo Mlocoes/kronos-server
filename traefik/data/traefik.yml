@@ -14,27 +14,13 @@ entryPoints:
   https:
     address: ":443"
 
-
-  smtp:
-    address: ":25"
-#  smtps:
-#    address: ":465"
-  smtpss:
-    address: ":587"
-
-  imaps:
-    address: ":993"
-
-
-
-
 #serversTransport:
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-  # file:
-  #   filename: /config.yml
+  file:
+    filename: /config.yml
 certificatesResolvers:
 
   myresolver:

@@ -26,15 +26,6 @@ services:
       kronos-net:
         ipv4_address: 172.20.0.10  # IP fija para Plex
 
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.plex.entrypoints=https"
-      - "traefik.http.routers.plex.rule=Host(`${PLEX_HOST}`)"
-      - "traefik.http.routers.plex.tls=true"
-      - "traefik.http.routers.plex.tls.certresolver=myresolver"
-      - "traefik.http.routers.plex.service=plex"
-      - "traefik.http.services.plex.loadbalancer.server.port=32400"
-
 networks:
   kronos-net:
     external: true

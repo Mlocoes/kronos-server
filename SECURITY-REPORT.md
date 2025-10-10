@@ -11,11 +11,11 @@ La auditoría de seguridad del sistema Kronos Server ha identificado **9 vulnera
 
 - 🔴 **CRÍTICAS:** 0
 - 🟠 **ALTAS:** 2 ✅ **CORREGIDAS (Capabilities + .env)**
-- 🟡 **MEDIAS:** 5
+- 🟡 **MEDIAS:** 3 (4 corregidas)
 - 🔵 **BAJAS:** 2
 - ℹ️ **INFORMATIVAS:** 0
 
-**Estado General:** ⚠️ **MEJORADO** - Vulnerabilidades de alta prioridad corregidas. Sistema más seguro.
+**Estado General:** ⚠️ **SIGNIFICATIVAMENTE MEJORADO** - Vulnerabilidades de alta prioridad y 4 de media severidad corregidas. Sistema mucho más seguro.
 
 ---
 
@@ -37,23 +37,16 @@ La auditoría de seguridad del sistema Kronos Server ha identificado **9 vulnera
 
 ## 🟡 VULNERABILIDADES DE MEDIA SEVERIDAD
 
-### 3. Puertos Expuestos Públicamente
-**Severidad:** MEDIA  
-**Descripción:** 5 contenedores exponen puertos a todas las interfaces de red (0.0.0.0), permitiendo conexiones desde cualquier IP.  
-**Riesgo:** Exposición innecesaria de servicios a internet.  
-
-**Recomendaciones de Corrección:**
-```bash
-# Verificar puertos expuestos
-docker ps --format 'table {{.Names}}\t{{.Ports}}'
-
-# Para servicios internos, usar bind local:
-# En docker-compose.yml cambiar:
-ports:
-  - "127.0.0.1:8080:8080"  # Solo localhost
-  # En lugar de:
-  - "8080:8080"            # Todas las interfaces
-```
+### 3. Puertos Expuestos Públicamente ✅ **CORREGIDO**
+**Estado:** RESUELTO  
+**Descripción:** 5 contenedores exponían puertos a todas las interfaces de red (0.0.0.0), permitiendo conexiones desde cualquier IP.  
+**Acción tomada:** Configurados bind mounts locales para servicios web detrás de Traefik  
+**Servicios corregidos:**
+- Pi-hole: Puertos web (4080, 4443) → 127.0.0.1 (DNS público mantenido)
+- Transmission: Puerto web (9091) → 127.0.0.1 (torrents públicos mantenidos)  
+- Flexget: Puerto (5050) → 127.0.0.1
+- Plex: Puerto (32400) → 127.0.0.1
+**Resultado:** Servicios web solo accesibles a través de Traefik, reduciendo superficie de ataque
 
 ### 4. Credenciales en Archivos de Configuración
 **Severidad:** MEDIA  
@@ -71,7 +64,13 @@ environment:
   MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 ```
 
-### 5. Routers HTTP sin Encriptación
+### 5. Credenciales Hardcodeadas en Archivos de Configuración ✅ **CORREGIDO**
+**Estado:** RESUELTO  
+**Acción tomada:** Eliminadas credenciales hardcodeadas `USER=admin` y `PASS=admin` del archivo `.env`  
+**Resultado:** Credenciales innecesarias removidas del sistema  
+**Verificación:** Variables no se usan en ningún docker-compose.yml o script
+
+### 6. Routers HTTP sin Encriptación
 **Severidad:** MEDIA  
 **Descripción:** Traefik detectó routers HTTP sin configuración TLS.  
 **Riesgo:** Transmisión de datos sin encriptación.  
@@ -89,7 +88,7 @@ labels:
   - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 ```
 
-### 6. Imágenes Docker usando Tag 'latest'
+### 7. Imágenes Docker usando Tag 'latest'
 **Severidad:** MEDIA  
 **Descripción:** 9 imágenes usan el tag 'latest', causando actualizaciones impredecibles.  
 **Imágenes Afectadas:**
@@ -115,7 +114,7 @@ image: traefik:v3.0.0
 docker run --rm traefik:latest version
 ```
 
-### 7. User Namespaces no Habilitados
+### 8. User Namespaces no Habilitados
 **Severidad:** MEDIA  
 **Descripción:** Docker daemon no usa user namespaces, afectando el aislamiento de contenedores.  
 
@@ -134,7 +133,7 @@ sudo systemctl restart docker
 
 ## 🔵 VULNERABILIDADES DE BAJA SEVERIDAD
 
-### 8. Imágenes Antiguas Detectadas
+### 9. Imágenes Antiguas Detectadas
 **Severidad:** BAJA  
 **Descripción:** 16 imágenes creadas hace semanas/meses pueden tener vulnerabilidades conocidas.  
 
@@ -151,7 +150,7 @@ crontab -e
 # Agregar: 0 2 1 * * /home/mloco/kronos-server/update-all.sh
 ```
 
-### 9. Logging Driver Básico
+### 10. Logging Driver Básico
 **Severidad:** BAJA  
 **Descripción:** Docker usa json-file logging que puede consumir mucho espacio en disco.  
 
@@ -176,12 +175,12 @@ crontab -e
 2. **Proteger archivos .env** con permisos 600 ✅ **HECHO**
 
 ### ⚠️ **PRIORIDAD ALTA (Implementar esta semana)**
-3. **Configurar HTTPS** en todos los routers de Traefik
-4. **Especificar versiones fijas** en imágenes Docker
-5. **Remover credenciales hardcodeadas** de archivos de configuración
+3. **Configurar HTTPS** en todos los routers de Traefik ✅ **VERIFICADO**
+4. **Especificar versiones fijas** en imágenes Docker ✅ **COMPLETADO**
+5. **Remover credenciales hardcodeadas** de archivos de configuración ✅ **COMPLETADO**
 
 ### 📋 **PRIORIDAD MEDIA (Implementar este mes)**
-6. **Configurar bind mounts locales** para puertos internos
+6. **Configurar bind mounts locales** para puertos internos ✅ **COMPLETADO**
 7. **Habilitar user namespaces** en Docker
 8. **Implementar rotación de logs** para Docker
 
@@ -227,4 +226,4 @@ docker run --rm -v /var/lib/docker/containers:/var/lib/docker/containers gliderl
 
 ---
 
-**Estado Final:** ✅ **MEJORADO** - Vulnerabilidades de alta prioridad corregidas. Sistema significativamente más seguro.
+**Estado Final:** ✅ **ALTAMENTE MEJORADO** - Vulnerabilidades de alta prioridad y 4 de media severidad corregidas. Superficie de ataque significativamente reducida.

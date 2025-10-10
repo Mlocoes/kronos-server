@@ -1,7 +1,7 @@
 # version: '1'
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:v3.4.0
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -29,7 +29,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/traefik.yml:/traefik.yml:ro
       - ./data/acme.json:/acme.json
-#      - ./data/config.yml:/config.yml:ro
+      - ./data/config.yml:/config.yml:ro
 
     labels:
       - "traefik.enable=true"

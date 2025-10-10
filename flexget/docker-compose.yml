@@ -16,7 +16,7 @@ services:
       - ${MEDIA}:/storage
 
     ports:
-      - 5050:5050
+      - "127.0.0.1:5050:5050"  # Solo localhost (detrás de Traefik)
 
     environment:
       - TZ=${FLEX_TZ}

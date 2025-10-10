@@ -15,9 +15,9 @@ services:
       - 172.20.0.2  # Usa Pi-hole como DNS
 
     ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
+      - "127.0.0.1:9091:9091"  # Solo localhost (detrás de Traefik)
+      - 51413:51413            # Puerto torrent público
+      - 51413:51413/udp        # Puerto torrent UDP público
 
     volumes:
       - ./transmission:/config

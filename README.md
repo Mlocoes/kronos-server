@@ -56,10 +56,14 @@ El sistema incluye varios scripts para facilitar la administración:
 - **`status-all.sh`** - Muestra el estado de todos los servicios
 - **`update-all.sh`** - Actualiza todas las imágenes Docker y reinicia los servicios
 - **`check-updates.sh`** - Verifica si hay actualizaciones disponibles sin aplicarlas
+- **`security-audit.sh`** - Realiza auditoría completa de seguridad del sistema
 
 #### Uso de Scripts
 
 ```bash
+# Verificar seguridad del sistema
+./security-audit.sh
+
 # Verificar actualizaciones disponibles
 ./check-updates.sh
 
@@ -73,8 +77,30 @@ El sistema incluye varios scripts para facilitar la administración:
 ./stop-all.sh && ./start-all.sh
 ```
 
-### Backups Automáticos
-Los backups se ejecutan diariamente a las 2 AM y se almacenan en `/mnt/backup/`
+## 🔒 Seguridad del Sistema
+
+### Auditorías de Seguridad
+
+El sistema incluye herramientas automáticas de auditoría de seguridad:
+
+- **Reporte de Seguridad:** `SECURITY-REPORT.md` - Análisis completo de vulnerabilidades
+- **Script de Auditoría:** `security-audit.sh` - Escaneo automático del sistema
+- **Estado Actual:** ⚠️ Requiere atención - 9 vulnerabilidades identificadas
+
+### Medidas de Seguridad Implementadas
+
+- ✅ **IPs fijas** para todos los servicios
+- ✅ **Redes Docker** segmentadas
+- ✅ **Archivos sensibles** protegidos (.gitignore)
+- ✅ **Submódulos git** para aislamiento de código
+- ✅ **Scripts de backup** automáticos
+- ✅ **Monitoreo de servicios** integrado
+
+### Próximas Acciones de Seguridad
+
+1. **Alta Prioridad:** Remover capabilities peligrosas, proteger archivos .env
+2. **Media Prioridad:** Configurar HTTPS, versiones fijas de imágenes
+3. **Baja Prioridad:** Habilitar user namespaces, rotación de logs
 
 ## Documentación
 

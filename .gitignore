@@ -1,12 +1,15 @@
 # Directorios de datos de servicios (contienen datos sensibles/volátiles)
 portainer/data/
+portainer/xdata/
 pihole/etc-pihole/
 pihole/var-log-pihole/
+pihole/pihole/
 plex/config/Library/Application Support/Plex Media Server/Logs/
 transmission/config/
 transmission/transmission/
 immich-app/database/
 immich-app/uploads/
+immich-app/immich-go/
 AlugueV3/database/backups/
 AlugueV3/backend/__pycache__/
 AlugueV3/backend/.pytest_cache/

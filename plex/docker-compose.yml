@@ -1,0 +1,40 @@
+# version: "1.0"
+
+services:
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+
+    ports:
+      - "32400:32400/tcp"
+
+    environment:
+      PUID: ${PLEX_PUID}
+      PGID: ${PLEX_PGID}
+      TZ: ${PLEX_TZ}
+      PLEX_CLAIM: ${PLEX_PLEX_CLAIM}
+      ADVERTISE_IP: ${PLEX_ADVERTISE_IP}
+      CHANGE_CONFIG_DIR_OWNERSHIP: ${PLEX_CHANGE_CONFIG_DIR_OWNERSHIP}
+
+    volumes:
+      - ./config:/root/Library/Application Support/Plex Media Server
+      - ${MEDIA}:/media
+
+    networks:
+      kronos-net:
+        ipv4_address: 172.20.0.10  # IP fija para Plex
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plex.entrypoints=https"
+      - "traefik.http.routers.plex.rule=Host(`${PLEX_HOST}`)"
+      - "traefik.http.routers.plex.tls=true"
+      - "traefik.http.routers.plex.tls.certresolver=myresolver"
+      - "traefik.http.routers.plex.service=plex"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+
+networks:
+  kronos-net:
+    external: true

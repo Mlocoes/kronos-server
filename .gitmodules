@@ -1,0 +1,3 @@
+[submodule "AlugueV3"]
+	path = AlugueV3
+	url = https://github.com/Mlocoes/AlugueV3.git

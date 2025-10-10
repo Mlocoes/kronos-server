@@ -1,0 +1,98 @@
+web_server: yes
+
+schedules:
+  - tasks: '*'
+    interval:
+      minutes: 30
+
+templates:
+  tv:
+    regexp:
+      reject:
+        - x265: {from: title}
+    series:
+      settings:
+        tv:
+          exact: yes
+          propers: 12 hours
+          quality: 720p
+      tv:
+      - The Last of Us
+    transmission:
+      host: transmission
+      port: 9091
+      username: admin
+      password: "admin"
+
+tasks:
+  eztvrss:
+    rss: https://eztvx.to/ezrss.xml
+    template: tv
+    priority: 2
+
+  sort_tv:
+    priority: 2
+    no_entries_ok: yes
+    parsing:
+      series: guessit
+    filesystem:
+      path: /downloads/complete
+      regexp: '.*\.(avi|mkv|mp4)$'
+      recursive: yes
+    accept_all: yes
+    thetvdb_lookup: yes
+    require_field: series_name
+    move:
+      to: '/storage/series/{{ tvdb_series_name }}/Season {{ series_season }}/'
+      along:
+        extensions: [sub, srt]
+      clean_source: 1
+    exec:
+      auto_escape: yes
+      on_output:
+        for_entries: |
+          if mediainfo "{{ location }}" | grep EAC3; then
+            ffmpeg -hwaccel auto -y -i "{{ location }}" -map 0 -c:s copy -c:v copy -c:a ac3 -b:a 640k "{{ location }}.converted"
+            mv -f "{{ location }}.converted" "{{ location }}"
+          fi
+
+  sort_movies:
+    priority: 2
+    no_entries_ok: yes
+    parsing:
+      movie: guessit
+    filesystem:
+      path: /downloads/complete
+      regexp: '.*\.(avi|mkv|mp4)$'
+      recursive: yes
+    accept_all: yes
+    tmdb_lookup: yes
+    require_field: filename
+    move:
+      to: '/storage/pelis/{{ filename }} ({{ movie_year }})/'
+      clean_source: 1
+    exec:
+      auto_escape: yes
+      on_output:
+        for_entries: |
+          if mediainfo "{{ location }}" | grep EAC3; then
+            ffmpeg -hwaccel auto -y -i "{{ location }}" -map 0 -c:s copy -c:v copy -c:a ac3 -b:a 640k "{{ location }}.converted"
+            mv -f "{{ location }}.converted" "{{ location }}"
+          fi
+
+  remove_stale_torrents:
+    from_transmission:
+      host: transmission
+      port: 9091
+      username: admin
+      password: "admin"
+      only_complete: yes
+    disable: [seen, seen_info_hash]
+    if:
+      - "transmission_progress == 100": accept
+    transmission:
+      host: transmission
+      port: 9091
+      username: admin
+      password: "admin"
+      action: purge  # Elimina torrent + archivos

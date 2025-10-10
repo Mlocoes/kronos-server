@@ -1,0 +1,78 @@
+# version: '1'
+
+services:
+
+  mailserver:
+    image: analogic/poste.io
+    container_name: postie
+    restart: unless-stopped
+    networks:
+      - kronos-net
+    environment:
+      - TZ=${POSTEIO_TZ}
+      - h=${POSTEIO_HOSTNAME} # Direccion del servidor de mail hosting
+      - DISABLE_CLAMAV=TRUE  # Manter desabilitado por economia de recursos
+      - DISABLE_LETSENCRYPT=TRUE  # Traefik cuida dos certificados
+      - HTTPS=OFF  # Traefik faz o SSL termination
+      # Configurações para melhorar deliverability
+      - DISABLE_RSPAMD=FALSE  # Habilitar antispam
+      - DISABLE_ROUNDCUBE=FALSE  # Manter webmail
+      # Configurações de relay (útil para IPs dinâmicos)
+      - RELAYHOST=smtp.gmail.com:587
+      - RELAYHOST_USERNAME=${RELAY_USERNAME:-}
+      - RELAYHOST_PASSWORD=${RELAY_PASSWORD:-}
+
+    volumes:
+      - ${POSTEIO_BASE_DADOS}:/data
+
+    healthcheck:
+      disable: true
+
+    labels:
+      - "traefik.enable=true"
+
+      # HTTP - Redirecionamento para HTTPS (Traefik cuida disso)
+      - "traefik.http.routers.mailserver.rule=Host(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.http.routers.mailserver.entrypoints=http"
+      - "traefik.http.routers.mailserver.middlewares=redirect-to-https"
+      - "traefik.http.services.mailserver.loadbalancer.server.port=80"
+
+      # HTTPS - Interface web e webmail
+      - "traefik.http.routers.mailserver-secure.entrypoints=https"
+      - "traefik.http.routers.mailserver-secure.rule=Host(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.http.routers.mailserver-secure.service=mailserver"
+      - "traefik.http.routers.mailserver-secure.tls=true"
+      - "traefik.http.routers.mailserver-secure.tls.certresolver=myresolver"
+      - "traefik.http.services.mailserver-secure.loadbalancer.server.port=80"
+
+      # SMTP (Porta 25) - Recebimento de emails externos
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.tcp.routers.smtp.entrypoints=smtp"
+      - "traefik.tcp.routers.smtp.tls=true"
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=25"
+      - "traefik.tcp.routers.smtp.service=smtp"
+
+      # SMTP Submission (Porta 587) - Envio autenticado
+      - "traefik.tcp.routers.smtp-submission.rule=HostSNI(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.tcp.routers.smtp-submission.entrypoints=smtp-submission"
+      - "traefik.tcp.routers.smtp-submission.tls=true"
+      - "traefik.tcp.services.smtp-submission.loadbalancer.server.port=587"
+      - "traefik.tcp.routers.smtp-submission.service=smtp-submission"
+
+      # IMAPS (Porta 993) - IMAP seguro
+      - "traefik.tcp.routers.imaps.rule=HostSNI(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.tcp.routers.imaps.entrypoints=imaps"
+      - "traefik.tcp.routers.imaps.tls=true"
+      - "traefik.tcp.services.imaps.loadbalancer.server.port=993"
+      - "traefik.tcp.routers.imaps.service=imaps"
+
+      # POP3S (Porta 995) - POP3 seguro (se necessário)
+      - "traefik.tcp.routers.pop3s.rule=HostSNI(`${POSTEIO_HOSTNAME}`)"
+      - "traefik.tcp.routers.pop3s.entrypoints=pop3s"
+      - "traefik.tcp.routers.pop3s.tls=true"
+      - "traefik.tcp.services.pop3s.loadbalancer.server.port=995"
+      - "traefik.tcp.routers.pop3s.service=pop3s"
+
+networks:
+  kronos-net:
+    external: true

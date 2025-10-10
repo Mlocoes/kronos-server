@@ -1,0 +1,42 @@
+# Directorios de datos de servicios (contienen datos sensibles/volátiles)
+portainer/data/
+pihole/etc-pihole/
+pihole/var-log-pihole/
+plex/config/Library/Application Support/Plex Media Server/Logs/
+transmission/config/
+transmission/transmission/
+immich-app/database/
+immich-app/uploads/
+AlugueV3/database/backups/
+AlugueV3/backend/__pycache__/
+AlugueV3/backend/.pytest_cache/
+
+# Archivos de logs
+*.log
+logs/
+update-*.log
+check-updates-*.log
+
+# Archivos de entorno (contienen secrets)
+.env
+.env.local
+.env.*.local
+
+# Archivos temporales
+*.tmp
+*.temp
+*~
+
+# Directorios de desarrollo
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Backups
+*.bak
+*.backup

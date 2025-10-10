@@ -1,0 +1,21 @@
+# Configuração Traefik para Poste.io
+# Este arquivo deve ser incluído na configuração do Traefik
+
+# EntryPoints para protocolos de email
+entryPoints:
+  smtp:
+    address: ":25"
+  smtp-submission:
+    address: ":587"
+  imaps:
+    address: ":993"
+  pop3s:
+    address: ":995"
+
+# Middlewares
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true

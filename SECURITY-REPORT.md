@@ -10,63 +10,28 @@
 La auditoría de seguridad del sistema Kronos Server ha identificado **9 vulnerabilidades** distribuidas en diferentes niveles de severidad:
 
 - 🔴 **CRÍTICAS:** 0
-- 🟠 **ALTAS:** 2
+- 🟠 **ALTAS:** 2 ✅ **CORREGIDAS (Capabilities + .env)**
 - 🟡 **MEDIAS:** 5
 - 🔵 **BAJAS:** 2
 - ℹ️ **INFORMATIVAS:** 0
 
-**Estado General:** ⚠️ **REQUIERE ATENCIÓN** - Se encontraron vulnerabilidades importantes que afectan la seguridad del sistema.
+**Estado General:** ⚠️ **MEJORADO** - Vulnerabilidades de alta prioridad corregidas. Sistema más seguro.
 
 ---
 
 ## 🟠 VULNERABILIDADES DE ALTA SEVERIDAD
 
-### 1. Capabilities Peligrosas en Contenedores
-**Severidad:** ALTA  
-**Descripción:** El contenedor Pi-hole ejecuta con capabilities peligrosas que pueden comprometer la seguridad del sistema host.  
-**Afectado:** `pihole` (CAP_NET_ADMIN, CAP_SYS_NICE, CAP_SYS_TIME)  
-**Riesgo:** Acceso privilegiado a red y sistema del host.  
+### 1. **Capabilities Peligrosas en Pi-hole** ✅ **CORREGIDO**
+**Estado:** RESUELTO  
+**Acción tomada:** Removidas capabilities `SYS_TIME` y `SYS_NICE` de Pi-hole  
+**Resultado:** Pi-hole funciona correctamente con solo `CAP_NET_ADMIN` (necesario para DHCP)  
+**Verificación:** Contenedor healthy y funcional
 
-**Recomendaciones de Corrección:**
-```yaml
-# En pihole/docker-compose.yml, modificar:
-services:
-  pihole:
-    # ... otras configuraciones ...
-    cap_add:
-      - NET_ADMIN      # Necesario para DHCP
-    cap_drop:
-      - SYS_ADMIN      # Remover capabilities peligrosas
-      - SYS_PTRACE
-      - SYS_RAWIO
-```
-
-### 2. Archivos de Entorno con Credenciales Sensibles
-**Severidad:** ALTA  
-**Descripción:** Se encontraron 12 archivos `.env` que contienen credenciales sensibles y no están adecuadamente protegidos.  
-**Archivos Afectados:**
-- `/home/mloco/kronos-server/plex/.env`
-- `/home/mloco/kronos-server/flexget/.env`
-- `/home/mloco/kronos-server/portainer/.env`
-- `/home/mloco/kronos-server/transmission/.env`
-- `/home/mloco/kronos-server/pihole/.env`
-- `/home/mloco/kronos-server/postie/.env`
-- `/home/mloco/kronos-server/AlugueV3/.env.example`
-- `/home/mloco/kronos-server/AlugueV3/backend/.env`
-- `/home/mloco/kronos-server/.env`
-- `/home/mloco/kronos-server/immich-app/.env`
-- `/home/mloco/kronos-server/cloudflare/.env`
-- `/home/mloco/kronos-server/traefik/.env`
-
-**Recomendaciones de Corrección:**
-```bash
-# Establecer permisos restrictivos
-chmod 600 /home/mloco/kronos-server/*/.env
-chmod 600 /home/mloco/kronos-server/AlugueV3/backend/.env
-
-# Verificar que estén en .gitignore (ya están incluidos)
-grep "\.env" .gitignore
-```
+### 2. **Archivos de Entorno con Credenciales Sensibles** ✅ **CORREGIDO**
+**Estado:** RESUELTO  
+**Acción tomada:** Cambiados permisos de todos los archivos `.env` a `600`  
+**Resultado:** Solo el propietario puede leer/escribir archivos sensibles  
+**Verificación:** Todos los archivos `.env` tienen permisos restrictivos
 
 ---
 
@@ -206,9 +171,9 @@ crontab -e
 
 ## 🛠️ PLAN DE REMEDIACIÓN PRIORIZADO
 
-### 🔥 **PRIORIDAD CRÍTICA (Implementar inmediatamente)**
-1. **Remover capabilities peligrosas** de Pi-hole
-2. **Proteger archivos .env** con permisos 600
+### 🔥 **PRIORIDAD CRÍTICA (Implementar inmediatamente)** ✅ **COMPLETADO**
+1. **Remover capabilities peligrosas** de Pi-hole ✅ **HECHO**
+2. **Proteger archivos .env** con permisos 600 ✅ **HECHO**
 
 ### ⚠️ **PRIORIDAD ALTA (Implementar esta semana)**
 3. **Configurar HTTPS** en todos los routers de Traefik
@@ -262,4 +227,4 @@ docker run --rm -v /var/lib/docker/containers:/var/lib/docker/containers gliderl
 
 ---
 
-**Estado Final:** ⚠️ **REQUIERE ATENCIÓN** - Implementar correcciones de alta prioridad antes de continuar con operaciones normales.
+**Estado Final:** ✅ **MEJORADO** - Vulnerabilidades de alta prioridad corregidas. Sistema significativamente más seguro.

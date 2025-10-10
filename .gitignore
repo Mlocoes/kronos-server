@@ -48,5 +48,6 @@ Thumbs.db
 traefik/data/acme.json
 traefik/cf_api_token.txt
 flexget/flexget/.flexget/db-config-jobs.sqlite
-flexget/flexget/.flexget/db-config.sqlite
-docs/received/
+
+# Backups de portainer
+portainer/data.backup.*/

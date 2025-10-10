@@ -40,3 +40,10 @@ Thumbs.db
 # Backups
 *.bak
 *.backup
+
+# Archivos sensibles específicos
+traefik/data/acme.json
+traefik/cf_api_token.txt
+flexget/flexget/.flexget/db-config-jobs.sqlite
+flexget/flexget/.flexget/db-config.sqlite
+docs/received/

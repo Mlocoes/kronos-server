@@ -1,0 +1,113 @@
+2025-10-10 09:33:43 - [0;35m🔒 INICIANDO AUDITORÍA DE SEGURIDAD - KRONOS SERVER[0m
+2025-10-10 09:33:43 - Report file: /home/mloco/kronos-server/security-audit-20251010-093343.txt
+2025-10-10 09:33:43 - Base directory: /home/mloco/kronos-server
+2025-10-10 09:33:43 - Timestamp: vie 10 oct 2025 09:33:43 CEST
+2025-10-10 09:33:43 - ================================================================================
+
+2025-10-10 09:33:43 - [0;34m🔍 Verificando privilegios de contenedores...[0m
+[0;31m🟠 ALTA[0m
+Título: Capabilities peligrosas detectadas
+Descripción: Contenedores con capabilities que pueden comprometer la seguridad del sistema
+Afectado: pihole: CAP_NET_ADMIN, CAP_SYS_NICE, CAP_SYS_TIME
+Recomendación: Revisar y remover capabilities innecesarias como NET_ADMIN, SYS_ADMIN, SYS_PTRACE
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando configuración de red...[0m
+[1;33m🟡 MEDIA[0m
+Título: Puertos expuestos públicamente
+Descripción: Se encontraron 5 contenedores con puertos expuestos a todas las interfaces (0.0.0.0)
+Afectado: Verificar: docker ps --format 'table {{.Names}}\t{{.Ports}}'
+Recomendación: Configurar bind mounts específicos o usar redes internas cuando sea posible
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando archivos sensibles...[0m
+[0;31m🟠 ALTA[0m
+Título: Archivos de entorno encontrados
+Descripción: Se encontraron archivos .env que pueden contener credenciales sensibles
+Afectado: /home/mloco/kronos-server/plex/.env
+/home/mloco/kronos-server/flexget/.env
+/home/mloco/kronos-server/portainer/.env
+/home/mloco/kronos-server/transmission/.env
+/home/mloco/kronos-server/pihole/.env
+/home/mloco/kronos-server/postie/.env
+/home/mloco/kronos-server/AlugueV3/.env.example
+/home/mloco/kronos-server/AlugueV3/backend/.env
+/home/mloco/kronos-server/.env
+/home/mloco/kronos-server/immich-app/.env
+/home/mloco/kronos-server/cloudflare/.env
+/home/mloco/kronos-server/traefik/.env
+Recomendación: Asegurar que los archivos .env estén en .gitignore y tengan permisos restrictivos (600)
+----------------------------------------
+[1;33m🟡 MEDIA[0m
+Título: Credenciales en archivos de configuración
+Descripción: Se encontraron posibles credenciales en archivos de configuración
+Afectado: /home/mloco/kronos-server/flexget/docker-compose.yml
+/home/mloco/kronos-server/security-audit.sh
+/home/mloco/kronos-server/pihole/docker-compose.yml
+/home/mloco/kronos-server/postie/setup-gmail-relay.sh
+/home/mloco/kronos-server/postie/docker-compose.yml
+/home/mloco/kronos-server/AlugueV3/update-config.sh
+/home/mloco/kronos-server/AlugueV3/docker-compose.template.yml
+/home/mloco/kronos-server/AlugueV3/install.sh
+/home/mloco/kronos-server/AlugueV3/database/init-scripts/00_create_app_user.sh
+/home/mloco/kronos-server/immich-app/docker-compose.yml
+/home/mloco/kronos-server/cloudflare/docker-compose.yml
+/home/mloco/kronos-server/scripts/backup_immich.sh
+Recomendación: Usar variables de entorno o Docker secrets para manejar credenciales sensibles
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando configuración de Traefik...[0m
+[1;33m🟡 MEDIA[0m
+Título: Routers HTTP sin encriptación
+Descripción: Se detectaron routers HTTP sin configuración TLS
+Afectado: Traefik configuration
+Recomendación: Configurar TLS para todos los routers o usar redirects HTTP->HTTPS
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando versiones de imágenes Docker...[0m
+[1;33m🟡 MEDIA[0m
+Título: Imágenes usando tag 'latest'
+Descripción: Se encontraron 9 imágenes usando el tag 'latest', lo que puede causar actualizaciones inesperadas
+Afectado: aluguev3-backend:latest
+portainer/portainer-ce:latest
+adminer:latest
+alpine:latest
+lscr.io/linuxserver/flexget:latest
+traefik:latest
+lscr.io/linuxserver/plex:latest
+pihole/pihole:latest
+oznu/cloudflare-ddns:latest
+Recomendación: Especificar versiones fijas en docker-compose.yml para mayor predictibilidad
+----------------------------------------
+[0;34m🔵 BAJA[0m
+Título: Imágenes antiguas detectadas
+Descripción: Se encontraron imágenes creadas hace semanas/meses, pueden tener vulnerabilidades conocidas
+Afectado: 16 imágenes antiguas encontradas
+Recomendación: Actualizar imágenes regularmente usando el script update-all.sh
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando configuración de Docker...[0m
+[1;33m🟡 MEDIA[0m
+Título: User namespaces no habilitados
+Descripción: Docker no está usando user namespaces, lo que puede afectar el aislamiento
+Afectado: Configuración de Docker daemon
+Recomendación: Considerar habilitar user namespaces en daemon.json
+----------------------------------------
+[0;34m🔵 BAJA[0m
+Título: Logging driver básico
+Descripción: Usando json-file logging que puede consumir mucho espacio en disco
+Afectado: Docker logging configuration
+Recomendación: Considerar configurar límites de log o usar logrotate
+----------------------------------------
+2025-10-10 09:33:44 - [0;34m🔍 Verificando servicios críticos...[0m
+2025-10-10 09:33:44 - [0;34m🔍 Verificando configuración de backups...[0m
+2025-10-10 09:33:44 - 
+================================================================================
+[0;35m📊 RESUMEN DE AUDITORÍA DE SEGURIDAD[0m
+2025-10-10 09:33:44 - ================================================================================
+[0;31m🔴 Vulnerabilidades CRÍTICAS: 0[0m
+2025-10-10 09:33:44 - [0;31m🟠 Vulnerabilidades ALTAS: 2[0m
+2025-10-10 09:33:44 - [1;33m🟡 Vulnerabilidades MEDIAS: 5[0m
+2025-10-10 09:33:44 - [0;34m🔵 Vulnerabilidades BAJAS: 2[0m
+2025-10-10 09:33:44 - [0;36mℹ️  Información: 0[0m
+2025-10-10 09:33:44 - 
+[0;31m⚠️  Se encontraron vulnerabilidades importantes que requieren atención inmediata.[0m
+2025-10-10 09:33:44 - 
+📄 Reporte completo guardado en: /home/mloco/kronos-server/security-audit-20251010-093343.txt
+2025-10-10 09:33:44 - ================================================================================
+

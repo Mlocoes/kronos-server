@@ -51,3 +51,9 @@ flexget/flexget/.flexget/db-config-jobs.sqlite
 
 # Backups de portainer
 portainer/data.backup.*/
+
+# Directorios de documentos y datos temporales
+docs/received/
+
+# Bases de datos temporales de Flexget
+flexget/flexget/.flexget/db-config.sqlite

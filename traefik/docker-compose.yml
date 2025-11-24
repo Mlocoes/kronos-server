@@ -1,11 +1,12 @@
 # version: '1'
 services:
   traefik:
-    image: traefik:v3.4.0
+    image: traefik:v3.6
     container_name: traefik
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    user: root
     networks:
       kronos-net:
         ipv4_address: 172.20.0.3  # IP fija para Traefik

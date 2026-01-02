@@ -10,6 +10,9 @@ services:
     networks:
       kronos-net:
         ipv4_address: 172.20.0.3  # IP fija para Traefik
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     ports:
       # HTTP
       - "80:80/tcp"

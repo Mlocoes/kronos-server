@@ -22,10 +22,10 @@ providers:
   file:
     filename: /config.yml
 certificatesResolvers:
-
   myresolver:
     acme:
       email: mcc@kronos.cloudns.ph
       storage: acme.json
-      httpChallenge:
-        entryPoint: http
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 0

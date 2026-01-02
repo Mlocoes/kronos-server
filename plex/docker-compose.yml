@@ -22,10 +22,11 @@ services:
       - ./config:/root/Library/Application Support/Plex Media Server
       - ${MEDIA}:/media
 
-    networks:
-      kronos-net:
-        ipv4_address: 172.20.0.10  # IP fija para Plex
+    network_mode: host
+    # networks:
+    #   kronos-net:
+    #     ipv4_address: 172.20.0.10  # IP fija para Plex
 
-networks:
-  kronos-net:
-    external: true
+# networks:
+#   kronos-net:
+#     external: true

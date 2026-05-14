@@ -26,7 +26,8 @@ certificatesResolvers:
     acme:
       email: mcc@kronos.cloudns.ph
       storage: acme.json
-      # Usamos HTTP Challenge porque es más simple y no requiere API Keys
-      # Funciona siempre que el puerto 80 esté abierto y accesible desde internet
-      httpChallenge:
-        entryPoint: http
+      # DNS challenge con Cloudflare: no depende de acceso entrante por puerto 80.
+      dnsChallenge:
+        provider: cloudflare
+        # Reduce errores por propagacion DNS lenta.
+        delayBeforeCheck: 30

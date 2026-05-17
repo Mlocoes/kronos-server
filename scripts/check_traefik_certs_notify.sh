@@ -25,7 +25,7 @@ TMP_OUT="$(mktemp)"
 trap 'rm -f "$TMP_OUT"' EXIT
 
 set +e
-WARN_DAYS="$WARN_DAYS" "$CHECK_SCRIPT" >"$TMP_OUT" 2>&1
+WARN_DAYS="$WARN_DAYS" BASE_DIR="$BASE_DIR" ACME_FILE="$BASE_DIR/traefik/data/acme.json" "$CHECK_SCRIPT" >"$TMP_OUT" 2>&1
 rc=$?
 set -e
 

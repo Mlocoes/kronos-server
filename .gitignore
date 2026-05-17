@@ -58,3 +58,6 @@ docs/received/
 
 # Bases de datos temporales de Flexget
 flexget/flexget/.flexget/db-config.sqlite
+
+# Archivos de runtime de Flexget (lock de proceso, contiene API password efímera)
+flexget/flexget/.flexget/.config-lock

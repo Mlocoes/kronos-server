@@ -19,10 +19,10 @@
 # │   ├── 172.20.0.11 - Plex (Media Server) [FIJA]
 # │   ├── 172.20.0.12 - Transmission (Torrents) [FIJA]
 # │   └── 172.20.0.13 - Flexget [FIJA]
-# └── AlugueV3 (Sistema de Aluguéis):
-#     ├── 172.20.0.4  - AlugueV3 Backend (API FastAPI) [FIJA]
-#     ├── 172.20.0.5  - AlugueV3 Frontend (Nginx) [FIJA]
-#     └── AlugueV3 Adminer - Solo red interna (alugueis_network)
+# └── AlugueisV3 (Sistema de Aluguéis):
+#     ├── 172.20.0.4  - AlugueisV3 Backend (API FastAPI) [FIJA]
+#     ├── 172.20.0.5  - AlugueisV3 Frontend (Nginx) [FIJA]
+#     └── AlugueisV3 Adminer - Solo red interna (alugueis_network)
 #
 # ============================================================================
 
@@ -62,15 +62,24 @@ else
 fi
 
 # PASO 4: Servicios de Infraestructura Base
-echo "📧 [4/6] Servicios de infraestrutura base..."
-echo "   ℹ️  Postie (serviço de email) DESABILITADO conforme solicitado"
-echo "   ✅ Pulando inicialização do Postie"
-
-# PASO 5: AlugueV3 (Sistema de Aluguéis)
-echo "🏠 [5/6] Iniciando AlugueV3 (Sistema de Aluguéis)..."
-cd ../AlugueV3 && docker-compose up -d
+echo "🌍 [4/7] Iniciando Cloudflare DDNS..."
+cd ../cloudflare && docker-compose up -d
 if [ $? -eq 0 ]; then
-    echo "✅ AlugueV3 iniciado exitosamente:"
+    echo "✅ Cloudflare DDNS iniciado exitosamente"
+    sleep 2
+else
+    echo "⚠️  Error iniciando Cloudflare, continuando..."
+fi
+
+echo "📧 [5/7] Servicios de infraestrutura base..."
+echo "   ℹ️  Postie (serviço de email) DESABILITADO conforme solicitado"
+echo "   ✅ Pulando inicialización do Postie"
+
+# PASO 6: AlugueisV3 (Sistema de Aluguéis)
+echo "🏠 [6/7] Iniciando AlugueisV3 (Sistema de Aluguéis)..."
+cd ../AlugueisV3 && docker-compose up -d
+if [ $? -eq 0 ]; then
+    echo "✅ AlugueisV3 iniciado exitosamente:"
     echo "   📊 Backend API: https://aluguel.kronos.cloudns.ph/api/"
     echo "   🌐 Frontend: https://aluguel.kronos.cloudns.ph"
     echo "   🛠️  Adminer: (acceso interno solamente)"
@@ -79,8 +88,8 @@ else
     echo "❌ Error iniciando AlugueV3"
 fi
 
-# PASO 6: Servicios Media y Utilidades
-echo "🎬 [6/6] Iniciando servicios media y utilidades..."
+# PASO 7: Servicios Media y Utilidades
+echo "🎬 [7/7] Iniciando servicios media y utilidades..."
 media_services=("immich-app" "portainer" "plex" "transmission" "flexget")
 
 for service in "${media_services[@]}"; do
@@ -99,7 +108,7 @@ echo "==========================================================================
 echo "🎉 ¡KRONOS SERVER INICIADO COMPLETAMENTE!"
 echo "============================================================================"
 echo "📊 SERVICIOS PRINCIPALES DISPONIBLES:"
-echo "   🏠 AlugueV3: https://aluguel.kronos.cloudns.ph"
+echo "   🏠 AlugueisV3: https://aluguel.kronos.cloudns.ph"
 echo "   📸 Immich: https://immich.kronos.cloudns.ph" 
 echo "   🎬 Plex: https://plex.kronos.cloudns.ph"
 echo "   🐳 Portainer: https://portainer.kronos.cloudns.ph"

@@ -1,16 +1,12 @@
-#version: '1'
 services:
   cloudflare-ddns:
-    image: oznu/cloudflare-ddns:latest
-    container_name: cloudflare
-    restart: always
+    image: favonia/cloudflare-ddns:latest
+    container_name: cloudflare-ddns
+    restart: unless-stopped
     environment:
-      - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${CLOUDFLARE_ZONE}
-      - PROXIED=false
-
-    env_file:
-      - .env
-
+      - CF_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=kronos.cloudns.ph
+      - PROXIED=true
+      - TTL=1
+      - UPDATE_CRON=@every 5m
     network_mode: "host"
-

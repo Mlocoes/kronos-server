@@ -10,6 +10,7 @@ set -euo pipefail
 
 BASE_DIR="/home/mloco/kronos-server"
 CHECK_SCRIPT="$BASE_DIR/scripts/check_traefik_certs.sh"
+CF_TOKEN_CHECK_SCRIPT="$BASE_DIR/scripts/check_cloudflare_token.sh"
 ALERT_EMAIL="${ALERT_EMAIL:-kronos00bot@gmail.com}"
 ALERT_FROM="${ALERT_FROM:-kronos00bot@gmail.com}"
 WARN_DAYS="${WARN_DAYS:-30}"
@@ -33,6 +34,27 @@ if [[ $rc -eq 0 ]]; then
   exit 0
 fi
 
+cf_token_hint=""
+if [[ -x "$CF_TOKEN_CHECK_SCRIPT" ]]; then
+  set +e
+  cf_check_out="$(TOKEN_FILE="$BASE_DIR/traefik/cf_api_token.txt" "$CF_TOKEN_CHECK_SCRIPT" 2>&1)"
+  cf_check_rc=$?
+  set -e
+  if [[ $cf_check_rc -ne 0 ]]; then
+    cf_token_hint="$({
+      echo
+      echo "Diagnostico Cloudflare DNS challenge:"
+      echo "- Estado token: INVALIDO"
+      echo "- Detalle: $cf_check_out"
+      echo "- Accion sugerida:"
+      echo "  1) Crear un API Token en Cloudflare con permisos Zone:DNS:Edit y Zone:Read para kronos.cloudns.ph"
+      echo "  2) Reemplazar el contenido de $BASE_DIR/traefik/cf_api_token.txt"
+      echo "  3) Reiniciar Traefik: cd $BASE_DIR/traefik && docker compose up -d"
+      echo "  4) Verificar: WARN_DAYS=30 $BASE_DIR/scripts/check_traefik_certs.sh"
+    })"
+  fi
+fi
+
 subject="[KRONOS][TLS] Alerta de certificados Traefik en $(hostname -s)"
 alert_body="$({
   echo "Se detectaron problemas de certificados en Traefik."
@@ -44,6 +66,7 @@ alert_body="$({
   echo
   echo "Resultado:"
   cat "$TMP_OUT"
+  printf '%s\n' "$cf_token_hint"
 })"
 
 send_with_ssmtp() {

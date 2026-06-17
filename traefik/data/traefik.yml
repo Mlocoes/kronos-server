@@ -1,8 +1,7 @@
-# version: '1'
-
 api:
   dashboard: true
-  debug: true
+  debug: false
+
 entryPoints:
   http:
     address: ":80"
@@ -14,20 +13,22 @@ entryPoints:
   https:
     address: ":443"
 
-#serversTransport:
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
   file:
     filename: /config.yml
+    watch: true
+
 certificatesResolvers:
   myresolver:
     acme:
-      email: mcc@kronos.cloudns.ph
-      storage: acme.json
-      # DNS challenge con Cloudflare: no depende de acceso entrante por puerto 80.
+      email: mloco@gmail.com        # ← cambia a un email real tuyo
+      storage: /acme.json           # ← ruta absoluta
       dnsChallenge:
         provider: cloudflare
-        # Reduce errores por propagacion DNS lenta.
         delayBeforeCheck: 30
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"

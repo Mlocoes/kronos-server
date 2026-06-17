@@ -12,7 +12,6 @@ http:
 
   routers:
     laboratorio:
-      # Configuración para bolsa.kronos.cloudns.ph (Frontend)
       rule: "Host(`bolsa.kronos.cloudns.ph`)"
       priority: 10
       service: laboratorio-service
@@ -22,15 +21,13 @@ http:
         certResolver: myresolver
 
     laboratorio-backend:
-      # Configuración para el Backend (API)
-      # Enruta /api, /docs y /openapi.json al backend
       rule: "Host(`bolsa.kronos.cloudns.ph`) && (PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/openapi.json`))"
       priority: 20
       service: laboratorio-backend-service
       entryPoints:
         - https
       middlewares:
-        - secure-headers # IMPORTANTE: Forzar X-Forwarded-Proto: https
+        - secure-headers
       tls:
         certResolver: myresolver
 

@@ -19,8 +19,14 @@ services:
       # HTTPS
       - "443:443/tcp"
     environment:
-      CF_DNS_API_TOKEN_FILE: /run/secrets/cf_api_token
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+#      CF_DNS_API_TOKEN_FILE: /run/secrets/cf_api_token
+#      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+
+# Pon tu nuevo token con los tres permisos de Cloudflare directamente aquí:
+      - CF_DNS_API_TOKEN=-_vaR8n9doNKJyDX60XZTLc890QlBrSwZoAbYRxm
+      - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
+
+
     command:
       # Configuración de entrypoints
       - "--entrypoints.web.address=:80"
